@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: watch-resources-pods
+spec:
+  selector:
+    app: watch-resources-pods 
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080 
+      name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watch-resources-services
+spec:
+  selector:
+    app: watch-resources-services
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: net-topology-web
+spec:
+  selector:
+    app: net-topology-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      name: http
+

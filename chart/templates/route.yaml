@@ -1,0 +1,47 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: watch-resources-pods
+  labels:
+    app: watch-resources-pods 
+spec:
+  host: watch-resources-pods.{{ .Values.wildcard }}
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: watch-resources-pods
+    weight: 100
+  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: watch-resources-services
+  labels:
+    app: watch-resources-services
+spec:
+  host: watch-resources-services.{{ .Values.wildcard }}
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: watch-resources-services
+    weight: 100
+  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: net-topology-web
+  labels:
+    app: net-topology-web
+spec:
+  host: net-topology.{{ .Values.wildcard }}
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: net-topology-web
+    weight: 100
+  wildcardPolicy: None
