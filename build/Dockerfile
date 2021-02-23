@@ -1,5 +1,5 @@
 FROM registry.access.redhat.com/ubi8/nodejs-14:latest
-COPY src /opt/app
-WORKDIR /opt/app 
+COPY *.js package.json *.sh docroot /opt/app-root/src
+WORKDIR /opt/app-root/src 
 RUN npm i
 CMD sh start.sh
