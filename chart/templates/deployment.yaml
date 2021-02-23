@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: watch-resources-pods-{{ .Values.version }}
+  name: watch-resources-pods-version-{{ .Values.version }}
   labels:
-    app: watch-resources-pods-{{ .Values.version }}
+    app: watch-resources-pods-version-{{ .Values.version }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: watch-resources-pods-{{ .Values.version }}
+      app: watch-resources-pods-version-{{ .Values.version }}
   template:
     metadata:
       labels:
-        app: watch-resources-pods-{{ .Values.version }}
+        app: watch-resources-pods-version-{{ .Values.version }}
     spec:
-      serviceAccountName: watch-all 
+      serviceAccountName: watch-all
       containers:
       - name: pods
-        image: quay.io/fdavalo/watch-resources:{{ .Values.tag.resources }}
+        image: quay.io/fdavalo/watch-resources:{{ .Values.tag.watch_resources }}
         ports:
         - containerPort: 8080
         args: ['sh', 'start.sh', 'pods', '/var/run/secrets/kubernetes.io/serviceaccount', '/run/ca', '/var/run/secrets/kubernetes.io/serviceaccount']
@@ -33,23 +33,23 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: watch-resources-services-{{ .Values.version }}
+  name: watch-resources-services-version-{{ .Values.version }}
   labels:
-    app: watch-resources-services-{{ .Values.version }}
+    app: watch-resources-services-version-{{ .Values.version }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: watch-resources-services-{{ .Values.version }}
+      app: watch-resources-services-version-{{ .Values.version }}
   template:
     metadata:
       labels:
-        app: watch-resources-services-{{ .Values.version }}
+        app: watch-resources-services-version-{{ .Values.version }}
     spec:
       serviceAccountName: watch-all
       containers:
       - name: services
-        image: quay.io/fdavalo/watch-resources:{{ .Values.tag.resources }}
+        image: quay.io/fdavalo/watch-resources:{{ .Values.tag.watch_resources }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -59,34 +59,34 @@ spec:
           mountPath: '/run/ca'
           readOnly: true
       volumes:
-      - name: ca 
+      - name: ca
         secret:
           secretName: ca
 ---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: watch-flows-{{ .Values.version }}
+  name: watch-flows-version-{{ .Values.version }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: watch-flows-{{ .Values.version }}
+    app: watch-flows-version-{{ .Values.version }}
 spec:
   selector:
     matchLabels:
-      app: watch-flows-{{ .Values.version }}
+      app: watch-flows-version-{{ .Values.version }}
   template:
     metadata:
       labels:
-        app: watch-flows-{{ .Values.version }}
+        app: watch-flows-version-{{ .Values.version }}
     spec:
       hostNetwork: true
       hostPID: true
       serviceAccountName: watch-all
       containers:
-      - name: flows 
-        image: quay.io/fdavalo/watch-flows-int:{{ .Values.tag.flowsint }}
+      - name: flows
+        image: quay.io/fdavalo/watch-flows-int:{{ .Values.tag.watch_flows_int }}
         env:
-        - name: WATCH_PODS_URL 
+        - name: WATCH_PODS_URL
           value: watch-resources-pods.{{ .Values.wildcard }}
         - name: WATCH_SERVICES_URL
           value: watch-resources-services.{{ .Values.wildcard }}
@@ -99,22 +99,22 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: net-topology-web-{{ .Values.version }}
+  name: net-topology-web-version-{{ .Values.version }}
   labels:
-    app: net-topology-web-{{ .Values.version }}
+    app: net-topology-web-version-{{ .Values.version }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: net-topology-web-{{ .Values.version }}
+      app: net-topology-web-version-{{ .Values.version }}
   template:
     metadata:
       labels:
-        app: net-topology-web-{{ .Values.version }} 
+        app: net-topology-web-version-{{ .Values.version }}
     spec:
       serviceAccountName: watch-all
       containers:
-      - name: web 
+      - name: web
         image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
         ports:
         - containerPort: 8080

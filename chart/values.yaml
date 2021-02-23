@@ -1,7 +1,6 @@
 wildcard: apps.ocp4.cluster
 version: 1.0.1
 tag:
-  resources: 1.0.1
-  flowsint: 1.0.1
+  watch_resources: 1.0.1
+  watch_flows_int: 1.0.1
   web: 1.0.1
-
