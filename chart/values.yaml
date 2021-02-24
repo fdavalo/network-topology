@@ -1,4 +1,4 @@
-wildcard: apps.ocp4.cluster
+wildcard: apps.ocp4-199.cluster
 version: 1-0-1
 daemon_port: 8081
 tag:
