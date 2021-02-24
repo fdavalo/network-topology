@@ -165,7 +165,7 @@ function checkPod(pod) {
 		console.log(fres);
 		if (!resources[fres] || (resources[fres]['podName']!=pod.metadata.name)) {
 			disconnect(fres);
-			resources[fres] = {'podName':pod.metadata.name, 'serverUrl':'ws://'+pod.status.hostIP+':8080/'};
+			resources[fres] = {'podName':pod.metadata.name, 'serverUrl':'ws://'+pod.status.hostIP+':'+process.env.DAEMON_PORT+'/'};
 			clients[fres] = new WebSocketClient({'name':fres});
 			clients[fres].on('connectFailed', handleError);
 			clients[fres].on('connect', handleConnect);

@@ -90,6 +90,8 @@ spec:
           value: watch-resources-pods.{{ .Values.wildcard }}
         - name: WATCH_SERVICES_URL
           value: watch-resources-services.{{ .Values.wildcard }}
+        - name: PORT
+          value: {{ .Values.daemon_port }}          
         ports:
         - containerPort: 8080
         args: ['sh', 'start.sh']
@@ -119,3 +121,6 @@ spec:
         ports:
         - containerPort: 8080
         args: ['sh', 'start.sh']
+        env:
+        - name: DAEMON_PORT
+          value: {{ .Values.daemon_port }}          
