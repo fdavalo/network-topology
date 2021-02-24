@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: watch-resources-pods-version-{{ .Values.version }}
+  name: watch-resources-pods-{{ .Values.version }}
   labels:
-    app: watch-resources-pods-version-{{ .Values.version }}
+    app: watch-resources-pods-{{ .Values.version }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: watch-resources-pods-version-{{ .Values.version }}
+      app: watch-resources-pods-{{ .Values.version }}
   template:
     metadata:
       labels:
-        app: watch-resources-pods-version-{{ .Values.version }}
+        app: watch-resources-pods-{{ .Values.version }}
     spec:
       serviceAccountName: watch-all
       containers:
@@ -34,18 +34,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: watch-resources-services-version-{{ .Values.version }}
+  name: watch-resources-services-{{ .Values.version }}
   labels:
-    app: watch-resources-services-version-{{ .Values.version }}
+    app: watch-resources-services-{{ .Values.version }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: watch-resources-services-version-{{ .Values.version }}
+      app: watch-resources-services-{{ .Values.version }}
   template:
     metadata:
       labels:
-        app: watch-resources-services-version-{{ .Values.version }}
+        app: watch-resources-services-{{ .Values.version }}
     spec:
       serviceAccountName: watch-all
       containers:
@@ -68,18 +68,18 @@ spec:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: watch-flows-version-{{ .Values.version }}
+  name: watch-flows-{{ .Values.version }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: watch-flows-version-{{ .Values.version }}
+    app: watch-flows-{{ .Values.version }}
 spec:
   selector:
     matchLabels:
-      app: watch-flows-version-{{ .Values.version }}
+      app: watch-flows-{{ .Values.version }}
   template:
     metadata:
       labels:
-        app: watch-flows-version-{{ .Values.version }}
+        app: watch-flows-{{ .Values.version }}
     spec:
       hostNetwork: true
       hostPID: true
@@ -104,18 +104,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: net-topology-web-version-{{ .Values.version }}
+  name: net-topology-web-{{ .Values.version }}
   labels:
-    app: net-topology-web-version-{{ .Values.version }}
+    app: net-topology-web-{{ .Values.version }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: net-topology-web-version-{{ .Values.version }}
+      app: net-topology-web-{{ .Values.version }}
   template:
     metadata:
       labels:
-        app: net-topology-web-version-{{ .Values.version }}
+        app: net-topology-web-{{ .Values.version }}
     spec:
       serviceAccountName: watch-all
       containers:
