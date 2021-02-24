@@ -93,7 +93,7 @@ spec:
         - name: PORT
           value: {{ .Values.daemon_port }}          
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.daemon_port }} 
         args: ['sh', 'start.sh']
         securityContext:
           privileged: true
