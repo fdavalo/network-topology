@@ -14,7 +14,7 @@ spec:
       labels:
         app: watch-resources-pods-version-{{ .Values.version }}
     spec:
-      serviceAccountName: watch-all
+      serviceAccountName: watch-all-{{ .Values.version }}
       containers:
       - name: pods
         image: quay.io/fdavalo/watch-resources:{{ .Values.tag.watch_resources }}
@@ -46,7 +46,7 @@ spec:
       labels:
         app: watch-resources-services-version-{{ .Values.version }}
     spec:
-      serviceAccountName: watch-all
+      serviceAccountName: watch-all-{{ .Values.version }}
       containers:
       - name: services
         image: quay.io/fdavalo/watch-resources:{{ .Values.tag.watch_resources }}
@@ -81,7 +81,7 @@ spec:
     spec:
       hostNetwork: true
       hostPID: true
-      serviceAccountName: watch-all
+      serviceAccountName: watch-all-{{ .Values.version }}
       containers:
       - name: flows
         image: quay.io/fdavalo/watch-flows-int:{{ .Values.tag.watch_flows_int }}
@@ -112,7 +112,7 @@ spec:
       labels:
         app: net-topology-web-version-{{ .Values.version }}
     spec:
-      serviceAccountName: watch-all
+      serviceAccountName: watch-all-{{ .Values.version }}
       containers:
       - name: web
         image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
