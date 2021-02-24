@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: watch-all-{{ .Values.version }}
+  name: watch-all
 rules:
 - apiGroups: [""]
   resources: ["pods","services"]
