@@ -18,6 +18,7 @@ spec:
       containers:
       - name: pods
         image: quay.io/fdavalo/watch-resources:{{ .Values.tag.watch_resources }}
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         args: ['sh', 'start.sh', 'pods', '/var/run/secrets/kubernetes.io/serviceaccount', '/run/ca', '/var/run/secrets/kubernetes.io/serviceaccount']
@@ -50,6 +51,7 @@ spec:
       containers:
       - name: services
         image: quay.io/fdavalo/watch-resources:{{ .Values.tag.watch_resources }}
+        imagePullPolicy: Always
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -85,6 +87,7 @@ spec:
       containers:
       - name: flows
         image: quay.io/fdavalo/watch-flows-int:{{ .Values.tag.watch_flows_int }}
+        imagePullPolicy: Always
         env:
         - name: WATCH_PODS_URL
           value: watch-resources-pods.{{ .Values.wildcard }}
@@ -118,6 +121,7 @@ spec:
       containers:
       - name: web
         image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         args: ['sh', 'start.sh']
