@@ -1,6 +1,6 @@
 wildcard: apps.ocp4.cluster
 version: 1-0-1
-port_daemon: 8081
+daemon_port: 8081
 tag:
   watch_resources: 1.0.1
   watch_flows_int: 1.0.1
