@@ -52,7 +52,6 @@ spec:
       - name: services
         image: quay.io/fdavalo/watch-resources:{{ .Values.tag.watch_resources }}
         imagePullPolicy: Always
-        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         args: ['sh', 'start.sh', 'services', '/var/run/secrets/kubernetes.io/serviceaccount', '/run/ca', '/var/run/secrets/kubernetes.io/serviceaccount']
@@ -90,9 +89,9 @@ spec:
         imagePullPolicy: Always
         env:
         - name: WATCH_PODS_URL
-          value: watch-resources-pods.{{ .Values.wildcard }}
+          value: watch-resources-pods-{{ .Values.version }}.{{ .Values.wildcard }}
         - name: WATCH_SERVICES_URL
-          value: watch-resources-services.{{ .Values.wildcard }}
+          value: watch-resources-services-{{ .Values.version }}.{{ .Values.wildcard }}
         - name: PORT
           value: "{{ .Values.daemon_port }}"          
         ports:
