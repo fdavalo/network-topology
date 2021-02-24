@@ -91,7 +91,7 @@ spec:
         - name: WATCH_SERVICES_URL
           value: watch-resources-services.{{ .Values.wildcard }}
         - name: PORT
-          value: {{ .Values.daemon_port }}          
+          value: "{{ .Values.daemon_port }}"          
         ports:
         - containerPort: {{ .Values.daemon_port }} 
         args: ['sh', 'start.sh']
@@ -123,4 +123,4 @@ spec:
         args: ['sh', 'start.sh']
         env:
         - name: DAEMON_PORT
-          value: {{ .Values.daemon_port }}          
+          value: "{{ .Values.daemon_port }}"          
