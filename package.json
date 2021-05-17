@@ -21,11 +21,11 @@
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
-    "watch-pods": "node watch-resources.js pods localenv/pods.json",
-    "watch-services": "node watch-resources.js services localenv/services.json",
-    "watch-nodes": "node watch-resources.js nodes localenv/nodes.json",
-    "watch-networkconfig": "node watch-resources.js networkconfig localenv/networkconfig.json",
-    "watch-flows": "node watch-flows.js 8084 localenv/flows.json",
+    "watch-pods": "node watch-resources.js pods",
+    "watch-services": "node watch-resources.js services",
+    "watch-nodes": "node watch-resources.js nodes",
+    "watch-networkconfig": "node watch-resources.js networkconfig",
+    "watch-flows": "node watch-flows.js 8084",
     "web": "node index.js",
     "lint": "node node_modules/eslint/bin/eslint.js *.js",
     "sonar": "sonar-scanner -Dsonar.qualitygate.wait=true"

@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ci-pipeline
+spec:
+  params:
+    - name: repo
+      type: string
+    - name: branch 
+      type: string
+  tasks:
+    - name: start-build
+      params:
+        - name: SCRIPT
+          value: oc $@
+        - name: ARGS
+          value:
+            - start-build $(params.repo)-$(params.branch) --wait --follow
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client-source
+      workspaces:
+        - name: source
+          workspace: empty
+  workspaces:
+    - name: empty

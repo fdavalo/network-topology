@@ -1,7 +1,7 @@
 wildcard: apps.ocp4-199.cluster
 version: 1-0-1
 daemon_port: 8081
-tag:
-  watch_resources: 1.0.1
-  watch_flows_int: 1.0.1
-  web: 1.0.1
+#image: quay.io/fdavalo/net-topology-web 
+#tag: 1.0.1
+image: image-registry.openshift-image-registry.svc:5000/net-topology/network-topology
+tag: latest

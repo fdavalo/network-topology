@@ -1,23 +1,21 @@
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
-  name: network-topology 
-  labels:
-    build: network-topology 
+  name: network-topology-{{ .Values.version }}
 spec:
   output:
     to:
       kind: ImageStreamTag
-      name: 'network-topology:latest'
+      name: 'network-topology:{{ .Values.tag }}'
   strategy:
-    type: Docker
-    dockerStrategy:
+    sourceStrategy:
       from:
         kind: ImageStreamTag
         name: 'nodejs-14:latest'
   source:
     git:
       uri: "https://github.com/fdavalo/network-topology"
+      ref: {{ .Values.tag }} 
     sourceSecret:
       name: "network-topology"
 

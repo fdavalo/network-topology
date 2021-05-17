@@ -2,8 +2,6 @@ kind: ImageStream
 apiVersion: image.openshift.io/v1
 metadata:
   name: network-topology 
-  labels:
-    build: network-topology 
 spec:
   lookupPolicy:
     local: false
@@ -12,8 +10,6 @@ kind: ImageStream
 apiVersion: image.openshift.io/v1
 metadata:
   name: nodejs-14 
-  labels:
-    build: network-topology 
 spec:
   lookupPolicy:
     local: false
@@ -29,8 +25,6 @@ kind: ImageStream
 apiVersion: image.openshift.io/v1
 metadata:
   name: python-36
-  labels:
-    build: bcc 
 spec:
   lookupPolicy:
     local: false

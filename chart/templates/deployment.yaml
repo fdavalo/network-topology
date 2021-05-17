@@ -17,7 +17,7 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: pods
-        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
+        image: {{ .Values.image }}:{{ .Values.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -50,7 +50,7 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: services
-        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
+        image: {{ .Values.image }}:{{ .Values.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -83,7 +83,7 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: services
-        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
+        image: {{ .Values.image }}:{{ .Values.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -116,7 +116,7 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: services
-        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
+        image: {{ .Values.image }}:{{ .Values.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -160,7 +160,7 @@ spec:
           mountPath: '/run/shared'
       containers:
       - name: flows
-        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
+        image: {{ .Values.image }}:{{ .Values.tag }} 
         imagePullPolicy: Always
         ports:
         - containerPort: {{ .Values.daemon_port }} 
@@ -173,6 +173,8 @@ spec:
       - name: accept
         image: quay.io/fdavalo/utils:bcc
         args: ['sh', '/run/shared/accept.sh']
+        securityContext:
+          privileged: true
         volumeMounts:
         - name: shared
           mountPath: '/var/shared'
@@ -181,6 +183,8 @@ spec:
       - name: connect
         image: quay.io/fdavalo/utils:bcc
         args: ['sh', '/run/shared/connect.sh']
+        securityContext:
+          privileged: true
         volumeMounts:
         - name: shared 
           mountPath: '/var/shared'
@@ -212,11 +216,11 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: web
-        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
+        image: {{ .Values.image }}:{{ .Values.tag }} 
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        args: ['sh', 'start.sh']
+        args: ['npm', 'run', 'web']
         env:
         - name: DAEMON_PORT
           value: "{{ .Values.daemon_port }}"          

@@ -14,7 +14,7 @@ var options = {
     accept: '/var/shared/accept.pipe',
 };
 
-if (process.env.CONFIGFILE) options = JSON.parse(fs.readFileSync(process.env.CONFIGFILE));
+if (process.env.CONFIGFILE) options = JSON.parse(fs.readFileSync(process.env.CONFIGFILE + "/" + options.resource + '.json'));
 if (process.argv.length > 3) options = JSON.parse(fs.readFileSync(process.argv[3]));
 
 var watch = new Watch(options);

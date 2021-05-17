@@ -1,0 +1,60 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: ci-event-listener
+spec:
+  podTemplate: {}
+  serviceAccountName: pipeline
+  triggers:
+    - bindings:
+        - kind: TriggerBinding
+          ref: ci-trigger-binding
+      interceptors:
+        - cel:
+            filter: 'body["event_name"] == "push" '
+      template:
+        name: ci-trigger-template
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: ci-trigger-template
+spec:
+  params:
+    - description: The git repository url
+      name: git-repo-url
+    - default: master
+      description: The git revision
+      name: git-revision
+    - description: The name of the deployment to be created / patched
+      name: git-repo-name
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: build-deploy-$(tt.params.git-repo-name)-$(uid)
+      spec:
+        params:
+          - name: repo
+            value: $(tt.params.git-repo-name)
+          - name: branch
+            value: $(tt.params.git-revision)
+        pipelineRef:
+          name: ci-pipeline 
+        serviceAccountName: pipeline
+        workspaces:
+          - emptyDir: {}
+            name: empty
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: ci-trigger-binding
+spec:
+  params:
+    - name: git-repo-url
+      value: $(body.repository.git_http_url)
+    - name: git-repo-name
+      value: $(body.repository.name)
+
+
