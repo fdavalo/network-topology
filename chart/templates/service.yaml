@@ -27,6 +27,32 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: watch-resources-nodes-{{ .Values.version}}
+spec:
+  selector:
+    app: watch-resources-nodes-{{ .Values.version}}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watch-resources-networkconfig-{{ .Values.version}}
+spec:
+  selector:
+    app: watch-resources-networkconfig-{{ .Values.version}}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: net-topology-web-{{ .Values.version}}
 spec:
   selector:

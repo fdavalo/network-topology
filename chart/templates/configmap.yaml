@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: watch-flows 
+data:
+  connect.sh: |
+    cd /opt/app-root/src
+    sh start.sh
+    python tcpconnect1.py > /var/shared/connect.pipe
+  accept.sh: |
+    cd /opt/app-root/src
+    sh start.sh
+    python tcpaccept1.py > /var/shared/accept.pipe
+  init.sh: |
+    if [[ ! -p /var/shared/accept.pipe ]]; then mkfifo /var/shared/accept.pipe; fi
+    if [[ ! -p /var/shared/connect.pipe ]]; then mkfifo /var/shared/connect.pipe; fi

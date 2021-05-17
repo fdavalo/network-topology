@@ -4,5 +4,8 @@ metadata:
   name: watch-all
 rules:
 - apiGroups: [""]
-  resources: ["pods","services"]
+  resources: ["pods","services","nodes"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["config.openshift.io"]
+  resources: ["networks"]
   verbs: ["get", "watch", "list"]

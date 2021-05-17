@@ -1,0 +1,44 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: network-topology 
+  labels:
+    build: network-topology 
+spec:
+  lookupPolicy:
+    local: false
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: nodejs-14 
+  labels:
+    build: network-topology 
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: latest
+      annotations:
+        openshift.io/imported-from: registry.access.redhat.com/ubi8/nodejs-14
+      from:
+        kind: DockerImage
+        name: registry.access.redhat.com/ubi8/nodejs-14
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: python-36
+  labels:
+    build: bcc 
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: latest
+      annotations:
+        openshift.io/imported-from: registry.access.redhat.com/ubi8/python-36
+      from:
+        kind: DockerImage
+        name: registry.access.redhat.com/ubi8/python-36
+---

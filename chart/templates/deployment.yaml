@@ -17,11 +17,11 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: pods
-        image: quay.io/fdavalo/watch-resources:{{ .Values.tag.watch_resources }}
+        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        args: ['sh', 'start.sh', 'pods', '/var/run/secrets/kubernetes.io/serviceaccount', '/run/ca', '/var/run/secrets/kubernetes.io/serviceaccount']
+        args: ['npm', 'run', 'watch-pods']
         volumeMounts:
         - name: ca
           mountPath: '/run/ca'
@@ -50,11 +50,77 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: services
-        image: quay.io/fdavalo/watch-resources:{{ .Values.tag.watch_resources }}
+        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        args: ['sh', 'start.sh', 'services', '/var/run/secrets/kubernetes.io/serviceaccount', '/run/ca', '/var/run/secrets/kubernetes.io/serviceaccount']
+        args: ['npm', 'run', 'watch-services']
+        volumeMounts:
+        - name: ca
+          mountPath: '/run/ca'
+          readOnly: true
+      volumes:
+      - name: ca
+        secret:
+          secretName: ca
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watch-resources-nodes-{{ .Values.version }}
+  labels:
+    app: watch-resources-nodes-{{ .Values.version }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watch-resources-nodes-{{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        app: watch-resources-nodes-{{ .Values.version }}
+    spec:
+      serviceAccountName: watch-all
+      containers:
+      - name: services
+        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        args: ['npm', 'run', 'watch-nodes']
+        volumeMounts:
+        - name: ca
+          mountPath: '/run/ca'
+          readOnly: true
+      volumes:
+      - name: ca
+        secret:
+          secretName: ca
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watch-resources-networkconfig-{{ .Values.version }}
+  labels:
+    app: watch-resources-networkconfig-{{ .Values.version }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watch-resources-networkconfig-{{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        app: watch-resources-networkconfig-{{ .Values.version }}
+    spec:
+      serviceAccountName: watch-all
+      containers:
+      - name: services
+        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        args: ['npm', 'run', 'watch-networkconfig']
         volumeMounts:
         - name: ca
           mountPath: '/run/ca'
@@ -83,22 +149,49 @@ spec:
       hostNetwork: true
       hostPID: true
       serviceAccountName: watch-all
+      initContainers:
+      - name: pipes
+        image: registry.access.redhat.com/ubi8-minimal:latest 
+        args: ['sh', '/run/shared/init.sh']
+        volumeMounts:
+        - name: shared
+          mountPath: '/var/shared'
+        - name: config-volume
+          mountPath: '/run/shared'
       containers:
       - name: flows
-        image: quay.io/fdavalo/watch-flows-int:{{ .Values.tag.watch_flows_int }}
+        image: quay.io/fdavalo/net-topology-web:{{ .Values.tag.web }}
         imagePullPolicy: Always
-        env:
-        - name: WATCH_PODS_URL
-          value: watch-resources-pods-{{ .Values.version }}.{{ .Values.wildcard }}
-        - name: WATCH_SERVICES_URL
-          value: watch-resources-services-{{ .Values.version }}.{{ .Values.wildcard }}
-        - name: PORT
-          value: "{{ .Values.daemon_port }}"          
         ports:
         - containerPort: {{ .Values.daemon_port }} 
-        args: ['sh', 'start.sh']
+        args: ['npm', 'run', 'watch-flows', '{{ .Values.daemon_port }}']
         securityContext:
           privileged: true
+        volumeMounts:
+        - name: shared
+          mountPath: '/var/shared'
+      - name: accept
+        image: quay.io/fdavalo/utils:bcc
+        args: ['sh', '/run/shared/accept.sh']
+        volumeMounts:
+        - name: shared
+          mountPath: '/var/shared'
+        - name: config-volume
+          mountPath: '/run/shared'
+      - name: connect
+        image: quay.io/fdavalo/utils:bcc
+        args: ['sh', '/run/shared/connect.sh']
+        volumeMounts:
+        - name: shared 
+          mountPath: '/var/shared'
+        - name: config-volume
+          mountPath: '/run/shared'
+      volumes:
+      - name: shared
+        emptyDir: {}
+      - name: config-volume
+        configMap:
+          name: watch-flows 
 ---
 apiVersion: apps/v1
 kind: Deployment

@@ -1,0 +1,7 @@
+{
+    "resource": "flows",
+    "port": 8084,
+    "verbose": true,
+    "connect": "localenv/connect",
+    "accept": "localenv/accept"
+}

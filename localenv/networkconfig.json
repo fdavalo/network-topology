@@ -1,0 +1,11 @@
+{
+    "resource": "confignetwork",
+    "port": 8083,
+    "verbose": true,
+    "kubeApiUrl": "https://api.ocp4-199.cluster:6443",
+    "kubeApiVersion": "v1",
+    "kubeApiGroup": "config.openshift.io",
+    "kubeApiResource": "networks",
+    "kubeApiTokenDir": "localenv",
+    "kubeApiCaDir": "localenv"
+}

@@ -1,0 +1,11 @@
+{
+    "resource": "pods",
+    "port": 8080,
+    "verbose": true,
+    "kubeApiUrl": "https://api.ocp4-199.cluster:6443",
+    "kubeApiVersion": "v1",
+    "kubeApiGroup": "",
+    "kubeApiResource": "pods",
+    "kubeApiTokenDir": "localenv",
+    "kubeApiCaDir": "localenv"
+}
