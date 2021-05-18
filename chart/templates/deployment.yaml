@@ -164,7 +164,7 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: {{ .Values.daemon_port }} 
-        args: ['npm', 'run', 'watch-flows', '{{ .Values.daemon_port }}']
+        args: ['node', 'watch-flows.js', '{{ .Values.daemon_port }}']
         securityContext:
           privileged: true
         volumeMounts:
