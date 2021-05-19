@@ -18,7 +18,7 @@ export class Watch {
         this.connect = null;
         this.accept = null;
 
-        this.localIps = this.getLocalIps();
+        this.options['localIps'] = this.getLocalIps();
         if (options['localIps'] != null) this.localIps = options['localIps'];
         this.options['localIps']['127.0.0.1'] = 'localhost';
 

@@ -4,4 +4,4 @@ daemon_port: 8081
 #image: quay.io/fdavalo/net-topology-web 
 #tag: 1.0.1
 image: image-registry.openshift-image-registry.svc:5000/net-topology/network-topology
-tag: latest
+tag: 1.0.1 

@@ -21,6 +21,7 @@
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
+    "deploy": "helm upgrade --install helm-release chart",
     "watch-pods": "node watch-resources.js pods",
     "watch-services": "node watch-resources.js services",
     "watch-nodes": "node watch-resources.js nodes",
