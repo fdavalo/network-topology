@@ -21,7 +21,7 @@ export class WsClient {
         this.disconnect(res);
         this.resources[res] = resource;
         this.clients[res] = new websocket.client({'name':res});
-        this.clients[res].on('connectFailed', this.handleConnectError.bind(this));
+        this.clients[res].on('connectFailed', this.handleConnectError.bind(this, res));
         this.clients[res].on('connect', this.handleConnect.bind(this));        
     }
 
@@ -32,12 +32,12 @@ export class WsClient {
         }
     }
 
-    handleConnectError(error) {
-        console.log('Connect Error: ' + error.toString());
+    handleConnectError(res, error) {
+        console.log('Connect Error:',res,error.toString());
     }
 
     handleError(res, error) {
-        console.log('Connect Error: ' + error.toString());
+        console.log('Connect Error:',res,error.toString());
         this.disconnect(res);
     }
 

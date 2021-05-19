@@ -12,6 +12,7 @@ var options = {
     verbose: false,
     kubeApiUrl: 'https://kubernetes.default:443',
     kubeApiVersion: 'v1',
+    kubeApiResource: process.argv[2],
     kubeApiTokenDir: '/var/run/secrets/kubernetes.io/serviceaccount',
     kubeApiCaDir: '/run/ca',
 };

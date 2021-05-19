@@ -22,12 +22,12 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
     "deploy": "helm upgrade --install helm-release chart",
-    "watch-pods": "node watch-resources.js pods",
-    "watch-services": "node watch-resources.js services",
-    "watch-nodes": "node watch-resources.js nodes",
-    "watch-networkconfig": "node watch-resources.js networkconfig",
-    "watch-flows": "node watch-flows.js 8084",
-    "web": "node index.js 8080 8084 1-0-1",
+    "watch-pods": "node watch-resources.js pods localenv/pods.json",
+    "watch-services": "node watch-resources.js services localenv/services.json",
+    "watch-nodes": "node watch-resources.js nodes localenv/nodes.json",
+    "watch-networkconfig": "node watch-resources.js networks localenv/networks.json",
+    "watch-flows": "node watch-flows.js 8084 localenv/flows.json",
+    "web": "node index.js 8080 8084 1-0-1 localenv/topology.json",
     "lint": "node node_modules/eslint/bin/eslint.js *.js",
     "sonar": "sonar-scanner -Dsonar.qualitygate.wait=true"
   },

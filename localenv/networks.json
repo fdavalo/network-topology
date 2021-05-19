@@ -1,5 +1,5 @@
 {
-    "resource": "confignetwork",
+    "resource": "networks",
     "port": 8083,
     "verbose": true,
     "kubeApiUrl": "https://api.ocp4-199.cluster:6443",

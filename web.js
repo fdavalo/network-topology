@@ -1,7 +1,5 @@
-import request from 'request';
-import process from 'process';
+import {WsServer} from './wsserver.js';
 import {WsClient} from './wsclient.js';
-import websocket from 'websocket';
 import http from 'http';
 import path from 'path';
 import fs from 'fs';
@@ -197,6 +195,10 @@ export class Watch {
         setTimeout(this.updateLocalFlows.bind(this), 1000);
     }
 
+	//ws client
+	clientConnected(res) {
+		console.log("client connected : ", res);
+	}
 	//ws client
 	messageReceived(res, msg) {
         if (msg.request === 'all') {
