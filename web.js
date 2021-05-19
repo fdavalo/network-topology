@@ -51,6 +51,7 @@ export class Watch {
         // 'str' : {'ip':'str', 'type':'str', 'name':'str', 'namespace':'str:optional', 'service':'str:optional'}
         this.Ips = {};
 		this.Cache = {};
+		this.IpPorts = {};
 
         // récup des ips du noeuds
         // vérif si ip pod est sur le noeud et donc flux connect/accept a corréler
@@ -76,6 +77,7 @@ export class Watch {
 		this.server = http.createServer(staticServe);
 		this.server.listen(this.options.port, function() {});
         this.wsServer = new WsServer(this.options.port, this, this.server);
+		this.updateLocalFlows();
 	}
 
 	//ws server
@@ -123,13 +125,13 @@ export class Watch {
 		if (this.IpPorts[ip+':'+port] != null) item['type'] = 'node';
 		if (this.Ips[ip] != null) {
 			if (this.Ips[ip]['type'] == 'pod') {
-				for (var key in ['type', 'namespace', 'pod', 'node']) item[key] = this.Ips[ip][key];
+				for (let key of ['type', 'namespace', 'pod', 'node']) item[key] = this.Ips[ip][key];
 			}
 			else if (this.Ips[ip]['type'] == 'service') {
-				for (var key in ['type', 'namespace', 'service']) item[key] = this.Ips[ip][key];
+				for (let key of ['type', 'namespace', 'service']) item[key] = this.Ips[ip][key];
 			}
 			else if (this.Ips[ip]['type'] == 'node') {
-				for (var key in ['type', 'node']) item[key] = this.Ips[ip][key];
+				for (let key of ['type', 'node']) item[key] = this.Ips[ip][key];
 			}
 		}
 		else {
@@ -198,7 +200,10 @@ export class Watch {
 	//ws client
 	clientConnected(res) {
 		console.log("client connected : ", res);
+		var message = {"request":"all"};
+        this.wsClient.send(res, message);
 	}
+
 	//ws client
 	messageReceived(res, msg) {
         if (msg.request === 'all') {
@@ -278,20 +283,20 @@ export class Watch {
 					if (pod.metadata.name.startsWith(this.options.flows_pod_prefix)) {
 						var fres = 'flows-'+pod.status.hostIP;
 						if (!this.options.resources[fres] || (this.options.resources[fres]['podName']!=pod.metadata.name)) {
-							this.options.resources[fres] = {'node':pod.spec.nodeName, 'podName':pod.metadata.name, 'serverUrl':'ws://'+pod.status.hostIP+':'+this.options.flows_pod_port+'/'};
+							this.options.resources[fres] = {'node':pod.spec.nodeName, 'podName':pod.metadata.name, 'serverUrl':'ws://'+pod.status.hostIP+':'+this.options.flows_pod_port+'/', 'backupUrl':'ws://'+pod.spec.nodeName+':'+this.options.flows_pod_port+'/'};
 							this.wsClient.addResource(fres, this.options.resources[fres]);
 						}
 					}
-					var podname = pod.metadata.namespace+"."+pod.metadata.name;
+					var podName = pod.metadata.namespace+"."+pod.metadata.name;
 					if (this.Ips[ip] == null) {
 						this.Ips[ip] = {
                             'type':'node',
 							'node':pod.spec.nodeName,
-                            'pods':[podname]
+                            'pods':[podName]
 						};
 					}
                     else {
-						if (this.Ips[ip]['pods'] == null) this.Ips[ip]['pods'] = [podname];
+						if (this.Ips[ip]['pods'] == null) this.Ips[ip]['pods'] = [podName];
 						else if (this.Ips[ip]['pods'].indexOf(podName)<0) this.Ips[ip]['pods'].push(podName);
                         this.Ips[ip]['type'] = 'node';
                     }

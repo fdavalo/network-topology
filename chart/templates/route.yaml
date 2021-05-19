@@ -33,6 +33,38 @@ spec:
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
+  name: watch-resources-nodes-{{ .Values.version}}
+  labels:
+    app: watch-resources-nodes-{{ .Values.version}}
+spec:
+  host: watch-resources-nodes-{{ .Values.version}}.{{ .Values.wildcard }}
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: watch-resources-nodes-{{ .Values.version}}
+    weight: 100
+  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: watch-resources-networkconfig-{{ .Values.version}}
+  labels:
+    app: watch-resources-networkconfig-{{ .Values.version}}
+spec:
+  host: watch-resources-networkconfig-{{ .Values.version}}.{{ .Values.wildcard }}
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: watch-resources-networkconfig-{{ .Values.version}}
+    weight: 100
+  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
   name: net-topology-web-{{ .Values.version}}
   labels:
     app: net-topology-web-{{ .Values.version}}

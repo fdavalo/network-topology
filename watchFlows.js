@@ -18,12 +18,10 @@ export class Watch {
         this.connect = null;
         this.accept = null;
 
-        this.options['localIps'] = this.getLocalIps();
-        if (options['localIps'] != null) this.localIps = options['localIps'];
+        if (options['localIps'] == null) this.options['localIps'] = this.getLocalIps();
         this.options['localIps']['127.0.0.1'] = 'localhost';
 
-        this.hostname = os.hostname();
-        if (options['hostname'] != null) this.hostname = options['hostname'];
+        if (options['hostname'] == null) this.options['hostname'] = os.hostname();
     }
 
     run() {
@@ -71,9 +69,9 @@ export class Watch {
         var ts = arr[0];
         var dns = arr[7];
         var cmd = arr[1];
-        var orip = {'host':this.checkIp(arr[3], ipmode, cmd, null, arr[4], ts),'port':arr[4]};
-        var destp = {'host':this.checkIp(arr[5], ipmode, null, dns, arr[6], ts),'port':arr[6]};
-        this.addFlow({"ori":orip['host'],"dest":destp['host']});
+        var ori = this.createIp(arr[3], ipmode, cmd, null, arr[4], ts);
+        var dest = this.createIp(arr[5], ipmode, null, dns, arr[6], ts);
+        this.addFlow({"ori":ori,"dest":dest});
     }
 
     handleLineAccept(line) {
@@ -82,14 +80,18 @@ export class Watch {
         if (arr[3]=="IP") return;
         var ts = arr[0];
         var cmd = arr[1];
-        var orip = {'host':this.checkIp(arr[3], ipmode, null, null, arr[4], ts),'port':arr[4]};
-        var destp = {'host':this.checkIp(arr[5], ipmode, cmd, null, arr[6], ts),'port':arr[6]};
-        this.addFlow({"ori":orip['host'],"dest":destp['host']});
+        var ori = this.createIp(arr[3], ipmode, null, null, arr[4], ts);
+        var dest = this.createIp(arr[5], ipmode, cmd, null, arr[6], ts);
+        this.addFlow({"ori":ori,"dest":dest});
     }
 
     addFlow(flowr) {
-        var flow = flowr['ori']['name']+'->'+flowr['dest']['name'];
-        if ((flowr['ori']['node'] != null) && (flowr['dest']['node'] != null) && ((flowr['ori']['cmd'] == null) || (flowr['dest']['cmd'] == null))) {
+        var ori = this.checkIp(flowr['ori']);
+        flowr['ori'] = ori;
+        var dest = this.checkIp(flowr['dest']);
+        flowr['dest'] = dest;
+        var flow = ori['name']+'->'+dest['name'];
+        if ((this.options['localIps'][ori['ip']] != null) && (this.options['localIps'][dest['ip']] != null) && ((ori['cmd'] == null) || (dest['cmd'] == null))) {
             if (this.LocalFlows[flow] == null) this.LocalFlows[flow] = flowr;
         }
         else if (this.Flows[flow] == null) {
@@ -99,39 +101,15 @@ export class Watch {
     }
 
     updateLocalFlows() {
-        var toDelete = [];
         for (var lflow in this.LocalFlows) {
             var flowr = this.LocalFlows[lflow];
-            var ori = flowr['ori'];
-            var dest = flowr['dest'];
-            if ((ori['cmd'] == null) && (this.IpPorts[ori['ip']+':'+ori['port']] != null)) {
-                ori['cmd'] = this.IpPorts[ori['ip']+':'+ori['port']];
-                ori['name'] = ori['node']+':'+ori['ip']+':'+ori['cmd'];
-                var flow = ori['name']+'->'+dest['name'];
-                if (this.Flows[flow] == null) {
-                    this.Flows[flow] = flowr;
-                    this.dispatch(flow, flowr);
-                }
-                toDelete.push(lflow);
-            }
-            else if ((dest['cmd'] == null) && (this.IpPorts[dest['ip']+':'+dest['port']] != null)) {
-                dest['cmd'] = this.IpPorts[dest['ip']+':'+dest['port']];
-                dest['name'] = dest['node']+':'+dest['ip']+':'+dest['cmd'];
-                var flow = ori['name']+'->'+dest['name'];
-                if (this.Flows[flow] == null) {
-                    this.Flows[flow] = flowr;
-                    this.dispatch(flow, flowr);
-                }
-                toDelete.push(lflow);
-            }
-        }
-        for (flow in toDelete) {
             delete this.LocalFlows[lflow];
+            this.addFlow(flowr);
         }
         setTimeout(this.updateLocalFlows.bind(this), 1000);
     }
 
-    checkIp(s, ipmode, cmd, dns, port, ts) { //8.12.12.12 4/6
+    createIp(s, ipmode, cmd, dns, port, ts) { //8.12.12.12 4/6
         var ip = s;
         if (s=="::1") ip = '127.0.0.1';
         if (s.startsWith('::ffff:')) ip = s.substring(7);
@@ -139,21 +117,30 @@ export class Watch {
         if ((dns != null) && (dns != 'No')) {
             res['dns'] = dns;
         }
+        if (cmd != null) res['cmd'] = cmd;
+        return res;
+    }
+
+    checkIp(res) { //8.12.12.12 4/6
+        var ip = res['ip'];
+        var cmd = res['cmd'];
+        var port = res['port'];
+
         if (cmd != null) {
             this.IpPorts[ip+':'+port] = cmd;
             res['cmd'] = cmd;
-            res['node'] = this.hostname;
-            res['name'] = this.hostname+':'+ip+':'+cmd;
+            res['node'] = this.options['hostname'];
+            res['name'] = this.options['hostname']+':'+ip+':'+cmd;
         }
-        if ((cmd == null) && (this.localIps[ip] != null)) {
+        else {
             if (this.IpPorts[ip+':'+port] != null) {
-                res['node'] = this.hostname;
+                res['node'] = this.options['hostname'];
                 res['cmd'] = this.IpPorts[ip+':'+port];
-                res['name'] = this.hostname+':'+ip+':'+res['cmd'];
+                res['name'] = this.options['hostname']+':'+ip+':'+res['cmd'];
             }
-            else {
-                res['node'] = this.hostname;
-                res['name'] = this.hostname+':'+ip+':'+port;
+            else if (this.options['localIps'][ip] != null) {
+                res['node'] = this.options['hostname'];
+                res['name'] = this.options['hostname']+':'+ip+':'+port;
             }
         }
         return res;

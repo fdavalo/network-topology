@@ -20,6 +20,7 @@ export class WsClient {
     addResource(res, resource) {
         this.disconnect(res);
         this.resources[res] = resource;
+        resource['url'] = resource['serverUrl'];
         this.clients[res] = new websocket.client({'name':res});
         this.clients[res].on('connectFailed', this.handleConnectError.bind(this, res));
         this.clients[res].on('connect', this.handleConnect.bind(this));        
@@ -34,6 +35,14 @@ export class WsClient {
 
     handleConnectError(res, error) {
         console.log('Connect Error:',res,error.toString());
+        if (this.resources[res]['backupUrl'] != null) {
+            if (this.resources[res]['serverUrl'] == this.resources[res]['url']) {
+                this.resources[res]['url'] = this.resources[res]['backupUrl'];
+            }
+            else {
+                this.resources[res]['url'] = this.resources[res]['serverUrl'];
+            }
+        }
     }
 
     handleError(res, error) {
@@ -64,7 +73,7 @@ export class WsClient {
 
     connect(res) {
         if (this.clientConnections[res]) this.disconnect(res);
-        else this.clients[res].connect(this.resources[res].serverUrl);
+        else this.clients[res].connect(this.resources[res].url);
     }
 
     check() {
