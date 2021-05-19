@@ -6,12 +6,15 @@ import http from 'http';
 // of the wb socket
 export class WsServer {
 
-    constructor(port, messageHandler) {
-		var server = http.createServer();
-        server.listen(port, function() {});
+    constructor(port, messageHandler, server=null) {
+        if (server == null) {
+            this.server = http.createServer();
+            this.server.listen(port, function() {});    
+        }
+        else this.server = server;
         this.clients = [];
         this.messageHandler = messageHandler;
-        this.wsServer = new websocket.server({httpServer: server});
+        this.wsServer = new websocket.server({httpServer: this.server});
         this.wsServer.on('request', this.wsHandle.bind(this));        
     }
 

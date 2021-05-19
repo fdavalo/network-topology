@@ -1,0 +1,13 @@
+{
+	"resource": "topology",
+    "resources": {
+		"pods":{"serverUrl":"ws://watch-resources-pods-1-0-1:80/"},
+		"services":{"serverUrl":"ws://watch-resources-services-1-0-1:80/"},
+		"nodes":{"serverUrl":"ws://watch-resources-nodes-1-0-1:80/"},
+		"networkconfig":{"serverUrl":"ws://watch-resources-networkconfig-1-0-1:80/"}
+	},
+    "port": 8080,
+	"flows_pod_port": 8084,
+	"flows_pod_prefix": "watch-flows-1-0-1",
+    "verbose": false
+}

@@ -26,7 +26,7 @@
     "watch-nodes": "node watch-resources.js nodes",
     "watch-networkconfig": "node watch-resources.js networkconfig",
     "watch-flows": "node watch-flows.js 8084",
-    "web": "node index.js",
+    "web": "node index.js 8080 8084 1-0-1",
     "lint": "node node_modules/eslint/bin/eslint.js *.js",
     "sonar": "sonar-scanner -Dsonar.qualitygate.wait=true"
   },
