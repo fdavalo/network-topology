@@ -17,11 +17,11 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: pods
-        image: {{ .Values.image }}:latest
+        image: {{ .Values.image }}:{{ .Values.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        args: ['npm', 'run', 'watch-pods']
+        args: ['node', 'watch-resources.js', 'pods']
         volumeMounts:
         - name: ca
           mountPath: '/run/ca'
@@ -50,11 +50,11 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: services
-        image: {{ .Values.image }}:latest
+        image: {{ .Values.image }}:{{ .Values.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        args: ['npm', 'run', 'watch-services']
+        args: ['node', 'watch-resources.js', 'services']
         volumeMounts:
         - name: ca
           mountPath: '/run/ca'
@@ -83,11 +83,11 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: services
-        image: {{ .Values.image }}:latest
+        image: {{ .Values.image }}:{{ .Values.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        args: ['npm', 'run', 'watch-nodes']
+        args: ['node', 'watch-resources.js', 'nodes']
         volumeMounts:
         - name: ca
           mountPath: '/run/ca'
@@ -116,11 +116,11 @@ spec:
       serviceAccountName: watch-all
       containers:
       - name: services
-        image: {{ .Values.image }}:latest
+        image: {{ .Values.image }}:{{ .Values.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
-        args: ['npm', 'run', 'watch-networkconfig']
+        args: ['node', 'watch-resources.js', 'networks']
         volumeMounts:
         - name: ca
           mountPath: '/run/ca'
