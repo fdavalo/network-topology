@@ -51,11 +51,11 @@ export class Watch {
     getCid(pid) {
         if (pid == 1) return null;
         try {
-            var cmd = fs.readFileSync('/run/proc/'+pid+'/cmdline', 'utf8').split('\0');
+            var cmd = fs.readFileSync('/proc/'+pid+'/cmdline', 'utf8').split('\0');
             for (var i=0; i<cmd.length; i++) {
                 if ((cmd[i]=='-c')&&(i<(cmd.length-1))) return cmd[i+1];
             }
-            var contents = fs.readFileSync('/run/proc/'+pid+'/stat', 'utf8').split(' ');
+            var contents = fs.readFileSync('/proc/'+pid+'/stat', 'utf8').split(' ', 4);
             var ppid = contents[3];
             return this.getCid(ppid);
         }
