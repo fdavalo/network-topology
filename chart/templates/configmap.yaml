@@ -6,11 +6,11 @@ data:
   connect.sh: |
     cd /opt/app-root/src
     sh start.sh
-    python tcpconnect1.py -t -d 2>/dev/null | awk '{if (NF>=8) print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8;}' > /var/shared/connect.pipe
+    python tcpconnect2.py -t -d 2>/dev/null | awk '{if (NF>=9) print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9;}' > /var/shared/connect.pipe
   accept.sh: |
     cd /opt/app-root/src
     sh start.sh
-    python tcpaccept1.py -t 2>/dev/null | awk '{if (NF==7) print $1" "$2" "$3" "$4" "$5" "$6" "$7;}' > /var/shared/accept.pipe
+    python tcpaccept2.py -t 2>/dev/null | awk '{if (NF==8) print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8;}' > /var/shared/accept.pipe
   init.sh: |
     if [[ ! -p /var/shared/accept.pipe ]]; then mkfifo /var/shared/accept.pipe; fi
     if [[ ! -p /var/shared/connect.pipe ]]; then mkfifo /var/shared/connect.pipe; fi

@@ -60,8 +60,8 @@ export class Watch {
             for (var i=1; i<split.length; i++) {
                 if ((split[i] == '-c') && (i < (split.length-1))) {
                     cid = split[i+1];
-                    if (flowr['ori']['pid'] == pid) flowr['ori']['cid'] = cid;
-                    else if (flowr['dest']['pid'] == pid) flowr['dest']['cid'] = cid;
+                    if (flowr['ori']['pid'] != null) flowr['ori']['cid'] = cid;
+                    else if (flowr['dest']['pid'] != null) flowr['dest']['cid'] = cid;
                     break;
                 }
             }
