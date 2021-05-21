@@ -103,7 +103,6 @@ export class Watch {
         var ts = arr[0];
         var dns = arr[8];
         var pid = arr[1];
-        this.findCid(pid, []);
         var cmd = arr[2];
         var ori = this.createIp(arr[4], ipmode, cmd, null, arr[5], ts, pid);
         var dest = this.createIp(arr[6], ipmode, null, dns, arr[7], ts, null);
@@ -116,7 +115,6 @@ export class Watch {
         if (arr[3]=="IP") return;
         var ts = arr[0];
         var pid = arr[1];
-        this.findCid(pid, []);
         var cmd = arr[2];
         var ori = this.createIp(arr[4], ipmode, null, null, arr[5], ts, null);
         var dest = this.createIp(arr[6], ipmode, cmd, null, arr[7], ts, pid);
