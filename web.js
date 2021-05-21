@@ -40,13 +40,7 @@ var staticServe = function(req, res) {
 export class Watch {
 
     constructor(options) {
-        // same as RawFlows
         this.Flows = {};
-
-		// RawFlows : {"ori":{Host},"dest":{Host},"port":"int"}   missing : dns, localport, ts
-        // Host: {"name":"str", "ip":"str", "dns":"str:optional"}   missing : command line
-        // Host : {'ip':'str', 'name':'str', 'node':'str:optional', 'cmd':'str:optional', 'dns':'str:optional'}
-		this.LocalFlows = {};
 
         // 'str' : {'ip':'str', 'type':'str', 'name':'str', 'namespace':'str:optional', 'service':'str:optional'}
         this.Ips = {};
@@ -77,23 +71,14 @@ export class Watch {
 		this.server = http.createServer(staticServe);
 		this.server.listen(this.options.port, function() {});
         this.wsServer = new WsServer(this.options.port, this, this.server);
-		this.updateLocalFlows();
+		this.updateFlows();
 	}
 
 	//ws server
 	messageHandle(msg) {
 		if (msg.request) {
 			if (msg.request == "flows") {
-				var flows = {}
-				for (var res in data) {
-					if (res.startsWith("flows")) {
-						for (var key in data[res]) flows[key] = data[res][key];
-					}
-				}
-				connection.sendUTF(JSON.stringify({"request":msg.request, "data":flows}));
-			}
-			else if (data[msg.request]) {
-				connection.sendUTF(JSON.stringify({"request":msg.request, "data":data[msg.request]}));
+				this.wsServer.dispatch({"request":msg.request, "data":this.Flows});
 			}
 		}
 	}
@@ -152,49 +137,25 @@ export class Watch {
 		}
 	}
 
-	addFlow(node, flowr) {
+	addFlow(flowr) {
 		var ori = flowr['ori'];
 		var dest = flowr['dest'];
 		this.updateIp(ori);
 		this.updateIp(dest);
 		var flow = ori['name']+'->'+dest['name'];
-		if ((ori['node'] != null) && (ori['type'] != 'ip') && (dest['type'] == null)) {
-            if (! this.LocalFlows[flow]) this.LocalFlows[flow] = flowr;
-        }
-		else if ((dest['node'] != null) && (dest['type'] != 'ip') && (ori['type'] == null)) {
-            if (this.LocalFlows[flow] == null) this.LocalFlows[flow] = flowr;
-        }		
-		else if (this.Flows[flow] == null) {
+		if (this.Flows[flow] == null) {
 			this.Flows[flow] = flowr;
-			//this.dispatch(flow, flowr);
+			this.wsServer.dispatch({"request":"flow", "data":flowr});
 		}
 	}
 
-    updateLocalFlows() {
-        var toDelete = [];
-        for (var lflow in this.LocalFlows) {
-            var flowr = this.LocalFlows[lflow];
-            var ori = flowr['ori'];
-            var dest = flowr['dest'];
-			this.updateIp(ori);
-			this.updateIp(dest);
-			if ((ori['node'] != null) && (ori['type'] != 'ip') && (dest['type'] == null)) {
-				continue;
-			}
-			else if ((dest['node'] != null) && (dest['type'] != 'ip') && (ori['type'] == null)) {
-				continue;
-			}		
-        	var flow = ori['name']+'->'+dest['name'];
-            if (this.Flows[flow] == null) {
-                this.Flows[flow] = flowr;
-                //this.dispatch(flow, flowr);
-            }
-            toDelete.push(lflow);
+    updateFlows() {
+        for (var lflow in this.Flows) {
+            var flowr = this.Flows[lflow];
+			delete this.Flows[lflow];
+			this.addFlow(flowr);
         }
-        for (flow in toDelete) {
-            delete this.LocalFlows[lflow];
-        }
-        setTimeout(this.updateLocalFlows.bind(this), 1000);
+        setTimeout(this.updateFlows.bind(this), 10000);
     }
 
 	//ws client
@@ -212,14 +173,14 @@ export class Watch {
                 else if (res=="services") this.checkServiceIP(msg.data[uid]);
                 else if (res=="nodes") this.checkNodeIP(msg.data[uid]);
                 else if (res=="networkconfig") this.checkNetworkConfig(msg.data[uid]);
-				else if (res.startsWith("flows-")) this.addFlow(this.options.resources[res].node, msg.data[uid]);
+				else if (res.startsWith("flows-")) this.addFlow(msg.data[uid]);
             }
         }
         else if (msg.request === 'one') {
             if (res=="pods") this.checkPodIP(msg.value);
             else if (res=="services") this.checkServiceIP(msg.value);
             else if (res=="nodes") this.checkNodeIP(msg.value);
-			else if (res.startsWith("flows-")) this.addFlow(this.options.resources[res].node, msg.value);
+			else if (res.startsWith("flows-")) this.addFlow(msg.value);
         }
     }    
 	

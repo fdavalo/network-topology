@@ -4,6 +4,7 @@ import process from 'process';
 import readline from 'readline';
 import os from 'os';
 import { networkInterfaces } from 'os';
+import find  from 'find-process';
  
 export class Watch {
 
@@ -47,6 +48,39 @@ export class Watch {
         this.updateLocalFlows();
     }
 
+    findCidList(flowr, pid, list) {
+        var cid = '';
+        var arr = list.pop();
+        if (arr == null) {
+            this.addFlow(flowr);
+            return;
+        }
+        if (arr.cmd.startsWith('/usr/libexec/crio/conmon')) {
+            var split = arr.cmd.split(' ');
+            for (var i=1; i<split.length; i++) {
+                if ((split[i] == '-c') && (i < (split.length-1))) {
+                    cid = split[i+1];
+                    if (flowr['ori']['pid'] == pid) flowr['ori']['cid'] = cid;
+                    else if (flowr['dest']['pid'] == pid) flowr['dest']['cid'] = cid;
+                    break;
+                }
+            }
+        }
+        if ((cid == '') && (arr.ppid != 0)) {
+            this.findCid(flowr, arr.ppid);
+            return;
+        }
+        this.addFlow(flowr);
+    }
+
+    findCid(flowr, pid) {
+        find('pid', pid).then(this.findCidList.bind(this, flowr, pid)
+            , function (err) {
+                console.log(err.stack || err);
+        });
+    }
+
+
     getLocalIps() {
         const nets = networkInterfaces();
         const results = {};
@@ -63,26 +97,30 @@ export class Watch {
     }
 
     handleLineConnect(line) {
-        var arr = line.split(' ',8);
-        var ipmode = arr[2];
+        var arr = line.split(' ',9);
+        var ipmode = arr[3];
         if (arr[3]=="IP") return; 
         var ts = arr[0];
-        var dns = arr[7];
-        var cmd = arr[1];
-        var ori = this.createIp(arr[3], ipmode, cmd, null, arr[4], ts);
-        var dest = this.createIp(arr[5], ipmode, null, dns, arr[6], ts);
-        this.addFlow({"ori":ori,"dest":dest});
+        var dns = arr[8];
+        var pid = arr[1];
+        this.findCid(pid, []);
+        var cmd = arr[2];
+        var ori = this.createIp(arr[4], ipmode, cmd, null, arr[5], ts, pid);
+        var dest = this.createIp(arr[6], ipmode, null, dns, arr[7], ts, null);
+        this.findCid({"ori":ori,"dest":dest}, pid);
     }
 
     handleLineAccept(line) {
-        var arr = line.split(' ',7);
-        var ipmode = arr[2];
+        var arr = line.split(' ',8);
+        var ipmode = arr[3];
         if (arr[3]=="IP") return;
         var ts = arr[0];
-        var cmd = arr[1];
-        var ori = this.createIp(arr[3], ipmode, null, null, arr[4], ts);
-        var dest = this.createIp(arr[5], ipmode, cmd, null, arr[6], ts);
-        this.addFlow({"ori":ori,"dest":dest});
+        var pid = arr[1];
+        this.findCid(pid, []);
+        var cmd = arr[2];
+        var ori = this.createIp(arr[4], ipmode, null, null, arr[5], ts, null);
+        var dest = this.createIp(arr[6], ipmode, cmd, null, arr[7], ts, pid);
+        this.findCid({"ori":ori,"dest":dest}, pid);
     }
 
     addFlow(flowr) {
@@ -109,7 +147,7 @@ export class Watch {
         setTimeout(this.updateLocalFlows.bind(this), 1000);
     }
 
-    createIp(s, ipmode, cmd, dns, port, ts) { //8.12.12.12 4/6
+    createIp(s, ipmode, cmd, dns, port, ts, pid) { //8.12.12.12 4/6
         var ip = s;
         if (s=="::1") ip = '127.0.0.1';
         if (s.startsWith('::ffff:')) ip = s.substring(7);
@@ -118,6 +156,7 @@ export class Watch {
             res['dns'] = dns;
         }
         if (cmd != null) res['cmd'] = cmd;
+        if (pid != null) res['pid'] = pid;
         return res;
     }
 
