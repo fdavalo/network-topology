@@ -48,6 +48,22 @@ export class Watch {
         this.updateLocalFlows();
     }
 
+    getCid(pid) {
+        if (pid == 1) return null;
+        try {
+            var cmd = fs.readFileSync('/run/proc/'+pid+'/cmdline', 'utf8').split('\0');
+            for (var i=0; i<cmd.length; i++) {
+                if ((cmd[i]=='-c')&&(i<(cmd.length-1))) return cmd[i+1];
+            }
+            var contents = fs.readFileSync('/run/proc/'+pid+'/stat', 'utf8').split(' ');
+            var ppid = contents[3];
+            return this.getCid(ppid);
+        }
+        catch (error) {
+            return null;
+        } 
+    } 
+
     findCidList(flowr, pid, list) {
         var cid = '';
         var arr = list.pop();
@@ -74,10 +90,16 @@ export class Watch {
     }
 
     findCid(flowr, pid) {
-        find('pid', pid).then(this.findCidList.bind(this, flowr, pid)
-            , function (err) {
-                console.log(err.stack || err);
-        });
+        var cid = this.getCid(pid);
+        if (cid != null) {
+            if (flowr['ori']['pid'] != null) flowr['ori']['cid'] = cid;
+            else if (flowr['dest']['pid'] != null) flowr['dest']['cid'] = cid;
+        }
+        this.addFlow(flowr);
+        //find('pid', pid).then(this.findCidList.bind(this, flowr, pid)
+        //    , function (err) {
+        //        console.log(err.stack || err);
+        //});
     }
 
 

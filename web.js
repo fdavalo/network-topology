@@ -46,6 +46,7 @@ export class Watch {
         this.Ips = {};
 		this.Cache = {};
 		this.IpPorts = {};
+        this.Cids = {};
 
         // récup des ips du noeuds
         // vérif si ip pod est sur le noeud et donc flux connect/accept a corréler
@@ -103,12 +104,19 @@ export class Watch {
 	updateIp(item) {
 		var ip = item['ip'];
 		var port = item['port'];
+        var cid = item['cid'];
 		if (item['cmd'] != null) this.IpPorts[ip+':'+port] = item['cmd'];
 		else if (this.IpPorts[ip+':'+port] != null) {
 			item['cmd'] = this.IpPorts[ip+':'+port];
 		}
 		if (this.IpPorts[ip+':'+port] != null) item['type'] = 'node';
-		if (this.Ips[ip] != null) {
+        if ((cid != null) && (this.Cids[cid] != null)) {
+            item['type'] = 'pod';
+            item['pod'] = this.Cids[cid]['pod'];
+            item['namespace'] = this.Cids[cid]['namespace'];
+            item['node'] = this.Cids[cid]['node'];
+        }
+		else if (this.Ips[ip] != null) {
 			if (this.Ips[ip]['type'] == 'pod') {
 				for (let key of ['type', 'namespace', 'pod', 'node']) item[key] = this.Ips[ip][key];
 			}
@@ -276,6 +284,22 @@ export class Watch {
 						this.Ips[ip]['node'] = pod.spec.nodeName;
                         this.Ips[ip]['namespace'] = pod.metadata.namespace;
                         this.Ips[ip]['pod'] = pod.metadata.name;
+                    }
+                }
+                for (let container of pod.status.containerStatuses) {
+                    var cidp = container['containerID'];
+                    if ((cidp != null) && cidp.startsWith('cri-o://')) {
+                        var cid = cidp.substring(8);
+                        this.Cids[cid] = {'node': pod.spec.nodeName, 'namespace':pod.metadata.namespace, 'pod':pod.metadata.name};
+                    }
+                }
+                if (pod.status.initContainerStatuses != null) {
+                    for (let container of pod.status.initContainerStatuses) {
+                        var cidp = container['containerID'];
+                        if ((cidp != null) && cidp.startsWith('cri-o://')) {
+                            var cid = cidp.substring(8);
+                            this.Cids[cid] = {'node': pod.spec.nodeName, 'namespace':pod.metadata.namespace, 'pod':pod.metadata.name};
+                        }
                     }
                 }
         }
